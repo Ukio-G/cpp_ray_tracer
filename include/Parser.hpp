@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <variant>
-#include "AGeomerty.hpp"
+#include "geometry/AGeomerty.hpp"
 #include "Camera.hpp"
 #include "LightSource.hpp"
 #include "Vector.hpp"

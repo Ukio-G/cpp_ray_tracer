@@ -1,21 +1,22 @@
-#include "vec3.h"
 #ifndef _RAY_H
 #define _RAY_H
+
+#include "Vector.hpp"
 
 class Ray
 {
 public:
 	Ray();
-	Ray(const vec3& O, const vec3& D);
+	Ray(const Vec3d& O, const Vec3d& D);
 	~Ray();
 
-	vec3 Origin() const;
-	vec3 Direction() const;
-	vec3 pointAt(double t) const;
+    Vec3d Origin() const;
+    Vec3d Direction() const;
+    Vec3d pointAt(double t);
 
 private:
-	vec3 origin;
-	vec3 direction;
+    Vec3d origin;
+    Vec3d direction;
 };
 #endif // !_RAY_H
 

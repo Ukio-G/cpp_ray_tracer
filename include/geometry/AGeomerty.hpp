@@ -7,8 +7,8 @@
 class AGeomerty {
 public:
     AGeomerty();
-    AGeomerty(const Vector<unsigned char, 3> & color);
-    Vector<unsigned char, 3> color;
+    AGeomerty(Color & color_);
+    Color color;
     virtual bool intersect(const Ray & ray) = 0;
 };
 

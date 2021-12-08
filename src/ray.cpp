@@ -2,18 +2,19 @@
 
 Ray::Ray(){}
 
-Ray::Ray(const vec3& O, const vec3& D) : origin(O), direction(D) {}
+Ray::Ray(const Vec3d& O, const Vec3d& D) : origin(O), direction(D) {}
 
 Ray::~Ray(){}
 
-vec3 Ray::Origin() const {
+Vec3d Ray::Origin() const {
 	return origin;
 }
 
-vec3 Ray::Direction() const {
+Vec3d Ray::Direction() const {
 	return direction;
 }
 
-vec3 Ray::pointAt(double t) const {
+Vec3d Ray::pointAt(double t) {
+    //return {1.0,1.0,1.0};
 	return origin + direction * t;
 }

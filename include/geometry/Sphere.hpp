@@ -6,6 +6,8 @@
 
 class Sphere : public AGeomerty {
 public:
+    Sphere();
+    Sphere(Color color_, Vector<double, 3> position_, double diameter_);
     Vector<double, 3> position;
     double diameter;
 };

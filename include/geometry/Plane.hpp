@@ -5,6 +5,9 @@
 
 class Plane : public AGeomerty {
 public:
+    Plane();
+    Plane(Color color_, Vector<double, 3> position_, Vector<double, 3> direction_);
+
     Vector<double, 3> position;
     Vector<double, 3> direction;
 };

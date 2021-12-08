@@ -5,6 +5,9 @@
 
 class Cylinder : public AGeomerty {
 public:
+    Cylinder();
+    Cylinder(Color color_, double diameter_, double height_, Vector<double, 3> position_, Vector<double, 3> direction_);
+
     double diameter;
     double height;
 
