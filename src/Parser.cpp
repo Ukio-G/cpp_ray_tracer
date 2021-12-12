@@ -70,8 +70,8 @@ std::shared_ptr<AGeomerty> Parser::parseGeometry(const std::string &line) {
         return std::make_shared<Plane>(parsePlane(line));
     if (strncmp(line.c_str(), "cy", 2) == 0)
         return std::make_shared<Cylinder>(parseCylinder(line));
-//    if (strncmp(line.c_str(), "sq", 2) == 0)
-//        return std::make_shared<Square>(parseSquare(line));
+    if (strncmp(line.c_str(), "sq", 2) == 0)
+        return std::make_shared<Square>(parseSquare(line));
     if (strncmp(line.c_str(), "tr", 2) == 0)
         return std::make_shared<Triangle>(parseTriangle(line));
     return nullptr;

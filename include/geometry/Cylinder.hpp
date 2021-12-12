@@ -14,7 +14,9 @@ public:
     Vector<double, 3> position;
     Vector<double, 3> direction;
 
-    bool intersect(const Ray & ray);
+    std::optional<double> intersect(const Ray & ray);
+    std::optional<Vec3d> intersectPoint(const Ray & ray);
+    Vec3d getNormalInPoint(const Vec3d & intersectionPoint);
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Cylinder & cylinder) {

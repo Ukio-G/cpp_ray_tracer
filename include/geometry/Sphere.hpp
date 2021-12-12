@@ -10,7 +10,9 @@ public:
     Sphere(Color color_, Vec3d position_, double diameter_);
     Vec3d position;
     double diameter;
-    bool intersect(const Ray & ray);
+    std::optional<double> intersect(const Ray & ray);
+    std::optional<Vec3d> intersectPoint(const Ray & ray);
+    Vec3d getNormalInPoint(const Vec3d & intersectionPoint);
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Sphere & sphere) {

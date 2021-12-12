@@ -20,4 +20,6 @@ Vector<T, 3> cross(Vector<T, 3> & a, Vector<T, 3> & b) {
     return result;
 }
 
+double toRadian(double degree);
+
 #endif

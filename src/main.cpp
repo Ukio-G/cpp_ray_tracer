@@ -27,13 +27,10 @@ int main()
 
     window.setActive(true);
 
-    Parser p;
-    auto sceneObjects = p.parseFile("../config_rt.txt");
-
-    exit(0);
-
     unsigned int width_texture = 400;
     unsigned int height_texture = 400;
+
+
     /* Create texture */
     sf::Texture texture_;
     texture_.create(width_texture,height_texture);

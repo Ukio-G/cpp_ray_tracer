@@ -12,6 +12,14 @@ Triangle::Triangle(Color color_, Vertex a, Vertex b, Vertex c) : AGeomerty(color
     vertexes[2] = c;
 }
 
-bool Triangle::intersect(const Ray &ray) {
-    return false;
+std::optional<double> Triangle::intersect(const Ray &ray) {
+    return std::nullopt;
+}
+
+std::optional<Vec3d> Triangle::intersectPoint(const Ray &ray) {
+    return std::nullopt;
+}
+
+Vec3d Triangle::getNormalInPoint(const Vec3d &intersectionPoint) {
+    return Vec3d();
 }

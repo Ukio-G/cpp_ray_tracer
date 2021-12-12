@@ -4,6 +4,14 @@ Plane::Plane(Color color_, Vector<double, 3> position_, Vector<double, 3> normal
 
 Plane::Plane() : AGeomerty(), position({0.0, 0.0, 0.0}), normal({0.0, 0.0, 0.0}) { }
 
-bool Plane::intersect(const Ray &ray) {
-    return false;
+std::optional<double> Plane::intersect(const Ray &ray) {
+    return std::nullopt;
+}
+
+std::optional<Vec3d> Plane::intersectPoint(const Ray &ray) {
+    return std::nullopt;
+}
+
+Vec3d Plane::getNormalInPoint(const Vec3d &intersectionPoint) {
+    return Vec3d();
 }
