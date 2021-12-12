@@ -11,3 +11,7 @@ Triangle::Triangle(Color color_, Vertex a, Vertex b, Vertex c) : AGeomerty(color
     vertexes[1] = b;
     vertexes[2] = c;
 }
+
+bool Triangle::intersect(const Ray &ray) {
+    return false;
+}

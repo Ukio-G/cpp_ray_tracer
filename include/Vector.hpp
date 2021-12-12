@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <cmath>
 #include <cstring>
+#include <string>
+#include <ostream>
 
 #define DOOP(op) Vector<T,Dim> operator op(const Vector &other)  { Vector<T,Dim> result; for (int i = 0; i < Dim; ++i) result.m_data[i] = other.m_data[i] op m_data[i]; return result; }
 
@@ -27,7 +29,7 @@ public:
 
 
     // Работает только с векторами, которые не помечены как const
-    T operator[](int i) {
+    T& operator[](int i) {
         if (i >= Dim)
             throw std::runtime_error("Index is out of range");
         return m_data[i];
@@ -76,5 +78,16 @@ private:
 using Vertex = Vector<double, 3>;
 using Color = Vector<uint8_t, 3>;
 using Vec3d = Vector<double, 3>;
+using Vec2i = Vector<int, 2>;
+
+inline std::ostream& operator<< (std::ostream& ostream, Vec3d& vec3D) {
+    ostream << "(" << vec3D[0] << ", " << vec3D[1] << ", " << vec3D[2] << ")";
+    return ostream;
+}
+
+inline std::ostream& operator<< (std::ostream& ostream, Color & color) {
+    ostream << "(" << (int)color[0] << ", " << (int)color[1] << ", " << (int)color[2] << ")";
+    return ostream;
+}
 
 #endif

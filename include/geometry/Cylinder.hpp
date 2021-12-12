@@ -13,6 +13,17 @@ public:
 
     Vector<double, 3> position;
     Vector<double, 3> direction;
+
+    bool intersect(const Ray & ray);
 };
+
+inline std::ostream & operator<<(std::ostream &ostream, Cylinder & cylinder) {
+    ostream << "color: " << cylinder.color;
+    ostream << ", position: " << cylinder.position;
+    ostream << ", diameter: " << cylinder.diameter;
+    ostream << ", height: " << cylinder.height;
+    ostream << ", direction: " << cylinder.direction;
+    return ostream;
+}
 
 #endif

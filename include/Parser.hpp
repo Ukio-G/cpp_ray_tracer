@@ -3,16 +3,44 @@
 
 #include <memory>
 #include <variant>
+#include <optional>
+#include <geometry/Square.hpp>
+#include <geometry/Plane.hpp>
+#include <geometry/Cylinder.hpp>
+#include <geometry/Triangle.hpp>
+#include <geometry/Sphere.hpp>
 #include "geometry/AGeomerty.hpp"
 #include "Camera.hpp"
 #include "LightSource.hpp"
 #include "Vector.hpp"
+#include "ALight.hpp"
+#include "AmbientLight.hpp"
 
 class Parser {
 public:
-    using ParsetItem = std::variant<std::shared_ptr<AGeomerty>, std::shared_ptr<Camera>, std::shared_ptr<LightSource>, Vector<int, 2>>;
+    using ParseItem = std::variant<std::shared_ptr<AGeomerty>, std::shared_ptr<Camera>, std::shared_ptr<ALight>, std::shared_ptr<Vec2i>>;
 
-    ParsetItem parse_line(const std::string & line);
+    std::optional<ParseItem> parse_line(const std::string & line);
+
+private:
+    std::shared_ptr<AGeomerty>  parseGeometry(const std::string & line);
+    std::shared_ptr<Camera>     parseCamera(const std::string & line);
+    std::shared_ptr<ALight>     parseLight(const std::string & line);
+    std::shared_ptr<Vec2i>      parseWindowSize(const std::string & line);
+
+    /* Geometry parser */
+    Sphere      parseSphere(const std::string & line);
+    Triangle    parseTriangle(const std::string & line);
+    Cylinder    parseCylinder(const std::string & line);
+    Square      parseSquare(const std::string & line);
+    Plane       parsePlane(const std::string & line);
+
+    /* Light parser */
+    LightSource     parseLightSource(const std::string & line);
+    AmbientLight    parseAmbientLight(const std::string & line);
+
+    Vec3d parseVector(const std::string & line);
+    Color parseColor(const std::string & line);
 };
 
 

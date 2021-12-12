@@ -4,6 +4,7 @@ project(ray_tracer_cpp)
 find_package (Threads)
 
 include_directories(include)
+include_directories(SFML-2.5.1/include)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ray_tracer_cpp
@@ -24,6 +25,6 @@ add_executable(ray_tracer_cpp
         src/math/Matrix.cpp
         )
 
-set(SFML_LIBS sfml-graphics sfml-window sfml-system)
+set(SFML_LIBS sfml-graphics-d-2 sfml-window-d-2 sfml-system-d-2)
 
 target_link_libraries(ray_tracer_cpp ${SFML_LIBS} Threads::Threads)

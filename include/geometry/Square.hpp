@@ -6,10 +6,19 @@
 class Square : public AGeomerty {
 public:
     Square();
-    Square(Color color_, Vector<double, 3> center_, Vector<double, 3> direction_, double sizeSide_);
-    Vector<double, 3> center;
-    Vector<double, 3> direction;
+    Square(Color color_, Vec3d center_, Vec3d direction_, double sizeSide_);
+    Vec3d center;
+    Vec3d direction;
     double sizeSide;
+    bool intersect(const Ray & ray);
 };
+
+inline std::ostream & operator<<(std::ostream &ostream, Square & square) {
+    ostream << "color: " << square.color;
+    ostream << ", center: " << square.center;
+    ostream << ", direction: " << square.direction;
+    ostream << ", sizeSide: " << square.sizeSide;
+    return ostream;
+}
 
 #endif
