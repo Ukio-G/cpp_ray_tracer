@@ -28,58 +28,7 @@ int main()
     window.setActive(true);
 
     Parser p;
-
-
-    std::fstream file("../config_rt.txt");
-    char buf[512];
-    while (file.getline(buf,512)) {
-        //std::cout << buf << std::endl;
-
-        auto item = p.parse_line(buf);
-
-        if (item.has_value()) {
-
-
-            if (item->index() == 0) {           // AGeometry
-
-
-                std::shared_ptr<AGeomerty> geomerty = std::get<0>(*item);
-                if (Sphere * sphere = dynamic_cast<Sphere*>(geomerty.get()))
-                    std::cout << "Sphere: " << *sphere << std::endl;
-                else if (Plane * plane = dynamic_cast<Plane*>(geomerty.get()))
-                    std::cout << "Plane: " << *plane << std::endl;
-                else if (Square * square = dynamic_cast<Square*>(geomerty.get()))
-                    std::cout << "Square: " << *square << std::endl;
-                else if (Triangle * triangle = dynamic_cast<Triangle*>(geomerty.get()))
-                    std::cout << "Triangle: " << *triangle << std::endl;
-                else if (Cylinder * cylinder = dynamic_cast<Cylinder*>(geomerty.get()))
-                    std::cout << "Cylinder: " << *cylinder << std::endl;
-
-
-            } else if (item->index() == 1) {    // Camera
-                std::cout << "Camera: " << *(std::get<1>(*item).get()) << std::endl;
-            } else if (item->index() == 2) {    // ALight
-
-                std::shared_ptr<ALight> light = std::get<2>(*item);
-                if (AmbientLight * ambientLight = dynamic_cast<AmbientLight*>(light.get()))
-                    std::cout << "AmbientLight: " << *ambientLight << std::endl;
-                else if (LightSource * lightSource = dynamic_cast<LightSource*>(light.get()))
-                    std::cout << "LightSource: " << *lightSource << std::endl;
-
-            } else if (item->index() == 3) {    // Vec2i
-                auto resolution = *(std::get<3>(*item).get());
-                std::cout << "Window resolution: " << resolution[0] << " " << resolution[1] << std::endl;
-            }
-
-
-
-        }
-        else {
-            std::cout << "Can't recognize line" << std::endl;
-        }
-
-        memset(buf, 0, 512);
-    }
+    auto sceneObjects = p.parseFile("../config_rt.txt");
 
     exit(0);
 
