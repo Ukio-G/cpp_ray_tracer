@@ -12,8 +12,7 @@ public:
     Color color;
 
     virtual std::optional<double> intersect(const Ray & ray) = 0;
-    virtual std::optional<Vec3d> intersectPoint(const Ray & ray) = 0;
-    virtual Vec3d getNormalInPoint(const Vec3d & point) = 0;
+    virtual Vec3d getNormalInPoint(const Vec3d &point, const Vec3d &view) = 0;
 };
 
 

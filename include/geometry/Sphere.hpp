@@ -11,8 +11,7 @@ public:
     Vec3d position;
     double diameter;
     std::optional<double> intersect(const Ray & ray);
-    std::optional<Vec3d> intersectPoint(const Ray & ray);
-    Vec3d getNormalInPoint(const Vec3d & intersectionPoint);
+    Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view);
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Sphere & sphere) {

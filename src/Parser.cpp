@@ -90,7 +90,7 @@ Triangle Parser::parseTriangle(const std::string &line) {
     std::string type, v1, v2, v3, color;
     std::istringstream iss(line);
 
-    iss >> type >> v1 >> v2 >> v2 >> color;
+    iss >> type >> v1 >> v2 >> v3 >> color;
 
     return {parseColor(color), parseVector(v1), parseVector(v2), parseVector(v3)};
 }

@@ -10,26 +10,34 @@
 #include <optional>
 #include <Parser.hpp>
 #include <fstream>
+#include <ApplicationLogic.hpp>
 
 
 int main()
 {
     sf::ContextSettings settings;
 
+    ApplicationLogic application;
+    application.initFromFile("../config_rt.txt");
+
+
+    /* Start Configure window context */
     settings.depthBits = 24;
     settings.stencilBits = 8;
     settings.antialiasingLevel = 4;
     settings.majorVersion = 3;
     settings.minorVersion = 0;
-
-    sf::RenderWindow window(sf::VideoMode(1500, 1000), "OpenGL", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default, settings);
     window.setVerticalSyncEnabled(false);
-
     window.setActive(true);
+    window.setFramerateLimit(30);
+    /* End Configure window context */
 
-    unsigned int width_texture = 400;
-    unsigned int height_texture = 400;
+    unsigned int width_texture = application.getFrameBuffer().width;
+    unsigned int height_texture = application.getFrameBuffer().height;
 
+    /* Render scene. Magic start from this point */
+    application.renderFrameBuffer();
 
     /* Create texture */
     sf::Texture texture_;
@@ -37,14 +45,9 @@ int main()
 
     /* Create image */
     sf::Image image;
-    image.create(width_texture, height_texture, sf::Color::White);
 
-    /* Set image data */
-    for (int i = 0; i < width_texture; ++i) {
-        for (int j = 0; j < height_texture; ++j) {
-            image.setPixel(i, j, sf::Color(i%255, j%255, (i+j)%255));
-        }
-    }
+    /* Load rendered data from our frame buffer to image */
+    application.swapFrameBufferToSfImage(image);
 
     /* Update texture */
     texture_.update(image);
@@ -52,6 +55,7 @@ int main()
     /* Create sprite and init from texture */
     sf::Sprite sprite;
     sprite.setTexture(texture_);
+
 
     // run the main loop
     bool running = true;

@@ -10,9 +10,9 @@ public:
     Vec3d center;
     Vec3d direction;
     double sizeSide;
+    Vertex vertexes[4];
     std::optional<double> intersect(const Ray & ray);
-    std::optional<Vec3d> intersectPoint(const Ray &ray);
-    Vec3d getNormalInPoint(const Vec3d & intersectionPoint);
+    Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view);
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Square & square) {

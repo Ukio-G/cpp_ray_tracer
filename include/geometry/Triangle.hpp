@@ -10,8 +10,7 @@ public:
     Triangle(Color color_, Vertex a, Vertex b, Vertex c);
     Vertex vertexes[3];
     std::optional<double> intersect(const Ray & ray);
-    std::optional<Vec3d> intersectPoint(const Ray & ray);
-    Vec3d getNormalInPoint(const Vec3d & intersectionPoint);
+    Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view);
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Triangle & triangle) {

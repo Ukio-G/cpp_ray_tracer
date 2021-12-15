@@ -9,10 +9,7 @@ std::optional<double> Cylinder::intersect(const Ray &ray) {
     return std::nullopt;
 }
 
-std::optional<Vec3d> Cylinder::intersectPoint(const Ray &ray) {
-    return std::nullopt;
-}
 
-Vec3d Cylinder::getNormalInPoint(const Vec3d &intersection) {
+Vec3d Cylinder::getNormalInPoint(const Vec3d &intersection, const Vec3d &view) {
     return Vec3d();
 }

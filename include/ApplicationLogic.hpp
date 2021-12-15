@@ -11,14 +11,16 @@ public:
     void initFromFile(const std::string & filename);
     void renderFrameBuffer();
     const FrameBuffer& getFrameBuffer();
-    Ray computeForPixel(unsigned int x, unsigned int y);
+    Ray computeRayForPixel(unsigned int x, unsigned int y);
     std::pair<AGeomerty *, double> findNearestIntersect(const Ray &ray);
-
+    void swapFrameBufferToSfImage(sf::Image &image);
 
 private:
     ApplicationData data;
 
-    Color computeColorFromLight(std::pair<AGeomerty *, double> intersectedShape);
+    Color computeColorFromLight(std::pair<AGeomerty *, double> intersectedShape, Ray &ray);
+
+    bool lightAvailable(std::pair<AGeomerty *, double> pair1, Vec3d vector, LightSource &source);
 };
 
 
