@@ -34,6 +34,58 @@ Matrix3x3::Matrix3x3(const Matrix3x3 &other) {
             data[i][j] = other.data[i][j];
 }
 
+Matrix3x3::Matrix3x3() {
+
+}
+
+Matrix3x3 Matrix3x3::rotateX(double alpha) {
+    Matrix3x3 result;
+
+    result.data[0][0] = 1;
+    result.data[0][1] = 0;
+    result.data[0][2] = 0;
+    result.data[1][0] = 0;
+    result.data[1][1] = cos(alpha);
+    result.data[1][2] = -sin(alpha);
+    result.data[2][0] = 0;
+    result.data[2][1] = sin(alpha);
+    result.data[2][2] = cos(alpha);
+
+    return result;
+}
+
+Matrix3x3 Matrix3x3::rotateY(double beta) {
+    Matrix3x3 result;
+
+    result.data[0][0] = cos(beta);
+    result.data[0][1] = 0;
+    result.data[0][2] = sin(beta);
+    result.data[1][0] = 0;
+    result.data[1][1] = 1;
+    result.data[1][2] = 0;
+    result.data[2][0] = -sin(beta);
+    result.data[2][1] = 0;
+    result.data[2][2] = cos(beta);
+
+    return result;
+}
+
+Matrix3x3 Matrix3x3::rotateZ(double gamma) {
+    Matrix3x3 result;
+
+    result.data[0][0] = cos(gamma);
+    result.data[0][1] = -sin(gamma);
+    result.data[0][2] = 0;
+    result.data[1][0] = sin(gamma);
+    result.data[1][1] = cos(gamma);
+    result.data[1][2] = 0;
+    result.data[2][0] = 0;
+    result.data[2][1] = 0;
+    result.data[2][2] = 1;
+
+    return result;
+}
+
 std::ostream & operator<<(std::ostream & stream, const Matrix3x3 & matrix) {
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j) {
@@ -43,3 +95,5 @@ std::ostream & operator<<(std::ostream & stream, const Matrix3x3 & matrix) {
     }
     return stream;
 }
+
+

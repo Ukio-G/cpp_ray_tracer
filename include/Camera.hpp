@@ -2,7 +2,7 @@
 #define CAMERA_HPP
 
 #include "Vector.hpp"
-
+#include "FrameBuffer.hpp"
 class Camera {
 public:
     Camera();
@@ -11,6 +11,8 @@ public:
     Vec3d position;
     Vec3d direction;
     double fov;
+
+    Ray computeRayForPixel(unsigned int x, unsigned int y, FrameBuffer &framebuffer);
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Camera & camera) {

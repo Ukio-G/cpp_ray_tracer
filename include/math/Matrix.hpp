@@ -16,6 +16,10 @@ public:
     Vector<double, 3> operator*(Vector<double, 3> & vector);
     Vector<double, 3> operator/(Vector<double, 3> & vector);
     Matrix3x3 operator+(Matrix3x3 & other);
+
+    static Matrix3x3 rotateX(double alpha);
+    static Matrix3x3 rotateY(double beta);
+    static Matrix3x3 rotateZ(double gamma);
 };
 
 

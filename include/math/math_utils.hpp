@@ -21,6 +21,7 @@ Vector<T, 3> cross(Vector<T, 3> a, Vector<T, 3> b) {
 }
 
 double toRadian(double degree);
+double toDeg(double rad);
 
 template <class T, int Dim>
 Vector<T, Dim> clamp(Vector<T, Dim> v, T from, T to) {
@@ -40,5 +41,8 @@ template <class T, int Dim>
 double mixedProduct(Vector<T, Dim> v, Vector<T, Dim> w, Vector<T, Dim> z) {
     return dot(cross(v, w), z);
 }
+
+Vec3d 	getAngles(Vec3d v1);
+
 
 #endif

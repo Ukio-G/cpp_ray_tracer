@@ -12,7 +12,6 @@ Triangle::Triangle(Color color_, Vertex a, Vertex b, Vertex c) : AGeomerty(color
     vertexes[2] = c;
 }
 
-
 /* Алгоритм Моллера — Трумбора */
 std::optional<double> Triangle::intersect(const Ray &ray) {
     Vec3d dir = Vec3d::vectorFromPoints(ray.Origin(), ray.Direction()).normalized();
@@ -20,8 +19,10 @@ std::optional<double> Triangle::intersect(const Ray &ray) {
     Vec3d e2 = vertexes[2] - vertexes[0];
 
     Vec3d pvec = cross(dir, e2);
+
     double det = dot(e1, pvec);
-    if (det < 1e-8 && det > -1e-8)
+
+    if (det < 0.00001)
         return std::nullopt;
 
     double inv_det = 1 / det;

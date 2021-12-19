@@ -27,7 +27,7 @@ int main()
     settings.antialiasingLevel = 4;
     settings.majorVersion = 3;
     settings.minorVersion = 0;
-    sf::RenderWindow window(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(application.getFrameBuffer().width, application.getFrameBuffer().height), "OpenGL", sf::Style::Default, settings);
     window.setVerticalSyncEnabled(false);
     window.setActive(true);
     window.setFramerateLimit(30);

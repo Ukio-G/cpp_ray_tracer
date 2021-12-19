@@ -1,5 +1,6 @@
 #include <math/math_utils.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <iostream>
 #include "ApplicationLogic.hpp"
 
 ApplicationLogic::ApplicationLogic() {
@@ -22,9 +23,11 @@ const FrameBuffer &ApplicationLogic::getFrameBuffer() {
 void ApplicationLogic::renderFrameBuffer() {
     for (int i = 0; i < data.frameBuffer.width; ++i) {
         for (int j = 0; j < data.frameBuffer.height; ++j) {
-            Color rayTraceResult;
+            Color rayTraceResult(0.0,0.0,0.0);
+            auto & currentCamera = data.m_sceneComponents.cameras[data.currentCameraIdx];
 
-            Ray ray = computeRayForPixel(i, j);
+            Ray ray = currentCamera.computeRayForPixel(i, j, data.frameBuffer);
+
             std::pair<AGeomerty *, double> closestShape = findNearestIntersect(ray); // Shape and distance to shape
             if (closestShape.first)
                 rayTraceResult = computeColorFromLight(closestShape, ray);
@@ -33,9 +36,9 @@ void ApplicationLogic::renderFrameBuffer() {
     }
 }
 
+// TODO: Add comments
 Color ApplicationLogic::computeColorFromLight(std::pair<AGeomerty *, double> intersectedShape, Ray & ray) {
     Vector<double ,3> color_result;
-    Color result;
 
     /* Apply Ambient */
     auto ambient = data.m_sceneComponents.ambientLight;
@@ -45,12 +48,13 @@ Color ApplicationLogic::computeColorFromLight(std::pair<AGeomerty *, double> int
 
     /* Apply LightSource */
     double dist = intersectedShape.second;
+
     Vec3d intersectionPoint = Vec3d::vectorFromPoints(ray.Origin(), ray.Direction()).normalized() * dist + ray.Origin();
     Vec3d viewDir = Vec3d::vectorFromPoints(ray.Origin(), intersectionPoint).normalized().inverse();
     Vec3d shapeNormal = intersectedShape.first->getNormalInPoint(intersectionPoint, viewDir);
 
     for (auto &light: data.m_sceneComponents.lights) {
-
+        /* If we have intersection between intersection point and current light source - skip iteration */
         if (!lightAvailable(intersectedShape, intersectionPoint, light))
             continue;
         Vec3d lightDir = Vec3d::vectorFromPoints(intersectionPoint, light.position).normalized();
@@ -66,10 +70,7 @@ Color ApplicationLogic::computeColorFromLight(std::pair<AGeomerty *, double> int
         diffuse_color = diffuse_color * std::max((double)dot(lightDir, shapeNormal), 0.0) * light.ratio;
         color_result = color_result + diffuse_color;
     }
-    color_result = clamp(color_result, 0.0, 255.0);
-    result[0] = color_result[0]; result[1] = color_result[1]; result[2] = color_result[2];
-
-    return result;
+    return clamp(color_result, 0.0, 255.0);
 }
 
 std::pair<AGeomerty *, double> ApplicationLogic::findNearestIntersect(const Ray &ray) {
@@ -82,21 +83,6 @@ std::pair<AGeomerty *, double> ApplicationLogic::findNearestIntersect(const Ray 
     return result;
 }
 
-/* Screen space to scene space */
-Ray ApplicationLogic::computeRayForPixel(unsigned int x, unsigned int y) {
-    auto & framebuffer = data.frameBuffer;
-    auto & currentCamera = data.m_sceneComponents.cameras[data.currentCameraIdx];
-    auto start = currentCamera.position;
-    auto half_width = (double)framebuffer.width / 2.0;
-
-    auto x_r = (double)x - half_width;
-    auto y_r = (double)framebuffer.height / 2.0 - (double)y;
-    auto z_r = half_width / tan(toRadian(currentCamera.fov / 2.0));
-
-    Vec3d end(x_r, y_r, z_r);
-
-    return Ray(start, end);
-}
 
 void ApplicationLogic::swapFrameBufferToSfImage(sf::Image & image) {
     image.create(getFrameBuffer().width, getFrameBuffer().height, sf::Color::Black);
@@ -112,11 +98,13 @@ void ApplicationLogic::swapFrameBufferToSfImage(sf::Image & image) {
 }
 
 bool ApplicationLogic::lightAvailable(std::pair<AGeomerty *, double> intersectedShape, Vec3d intersectionPoint, LightSource &light) {
-    double distanceToLight = Vec3d::vectorFromPoints(light.position,intersectionPoint).length();
+    double distanceToLight = Vec3d::vectorFromPoints(light.position, intersectionPoint).length();
     Ray ray(light.position, intersectionPoint);
 
     std::pair<AGeomerty *, double> closestShape = findNearestIntersect(ray);
-    if (closestShape.second < distanceToLight)
-        return closestShape.first == intersectedShape.first;
+    if (closestShape.second < distanceToLight && closestShape.first != intersectedShape.first) {
+        //std::cout << "intersect of " << intersectedShape.first << " interrupted by " << closestShape.first << ": " << distanceToLight << " vs " << closestShape.second << std::endl;
+        return false;
+    }
     return true;
 }

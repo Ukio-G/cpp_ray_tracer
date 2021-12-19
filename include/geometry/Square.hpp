@@ -13,6 +13,8 @@ public:
     Vertex vertexes[4];
     std::optional<double> intersect(const Ray & ray);
     Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view);
+
+    void initVertexes();
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Square & square) {
