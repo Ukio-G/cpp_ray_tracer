@@ -12,6 +12,8 @@ public:
     double diameter;
     std::optional<double> intersect(const Ray & ray);
     Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist);
+
+    bool m_inverse = false;
 };
 
 inline std::ostream & operator<<(std::ostream &ostream, Sphere & sphere) {

@@ -22,8 +22,10 @@ std::optional<double> Sphere::intersect(const Ray &ray) {
     double d = tc[0] - tc[1];
     double t1 = tc[0] + tc[1];
 
-    if (d < 0) /* probably this make render work if we inside the sphere*/
+    if (d < 0) {
+        m_inverse = true;
         d = t1;
+    }
 
     if (d < 0)
         return std::nullopt;
@@ -32,5 +34,7 @@ std::optional<double> Sphere::intersect(const Ray &ray) {
 
 Vec3d Sphere::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist) {
     Vec3d normal = Vec3d::vectorFromPoints(position, intersectionPoint);
+    if (m_inverse)
+        normal = normal.inverse();
     return normal.normalized();
 }
