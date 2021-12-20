@@ -22,13 +22,18 @@ std::optional<double> Sphere::intersect(const Ray &ray) {
     double d = tc[0] - tc[1];
     double t1 = tc[0] + tc[1];
 
+    bool inv = false;
     if (d < 0) {
-        m_inverse = true;
+        inv = true;
         d = t1;
     }
 
     if (d < 0)
         return std::nullopt;
+
+    if (m_inversable && inv)
+        m_inverse = true;
+    m_inversable = false;
     return d;
 }
 
