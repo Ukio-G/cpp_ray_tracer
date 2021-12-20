@@ -40,7 +40,8 @@ std::optional<double> Triangle::intersect(const Ray &ray) {
     return dot(e2, qvec) * inv_det;
 }
 
-Vec3d Triangle::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view) {
+Vec3d
+Triangle::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist) {
     Vec3d v1 = vertexes[1] - vertexes[0];
     Vec3d v2 = vertexes[2] - vertexes[0];
 

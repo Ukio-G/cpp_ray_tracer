@@ -51,7 +51,7 @@ Color ApplicationLogic::computeColorFromLight(std::pair<AGeomerty *, double> int
 
     Vec3d intersectionPoint = Vec3d::vectorFromPoints(ray.Origin(), ray.Direction()).normalized() * dist + ray.Origin();
     Vec3d viewDir = Vec3d::vectorFromPoints(ray.Origin(), intersectionPoint).normalized().inverse();
-    Vec3d shapeNormal = intersectedShape.first->getNormalInPoint(intersectionPoint, viewDir);
+    Vec3d shapeNormal = intersectedShape.first->getNormalInPoint(intersectionPoint, viewDir, ray, dist);
 
     for (auto &light: data.m_sceneComponents.lights) {
         /* If we have intersection between intersection point and current light source - skip iteration */
@@ -63,12 +63,24 @@ Color ApplicationLogic::computeColorFromLight(std::pair<AGeomerty *, double> int
             continue;
 
         Vec3d diffuse_color;
-        diffuse_color[0] = std::min(light.color[0], intersectedShape.first->color[0]);
-        diffuse_color[1] = std::min(light.color[1], intersectedShape.first->color[1]);
-        diffuse_color[2] = std::min(light.color[2], intersectedShape.first->color[2]);
+        Vec3d specular_color;
 
+        /* Init colors */
+        diffuse_color[0] = std::min(light.color[0], intersectedShape.first->color[0]); /* R */
+        diffuse_color[1] = std::min(light.color[1], intersectedShape.first->color[1]); /* G */
+        diffuse_color[2] = std::min(light.color[2], intersectedShape.first->color[2]); /* B */
+        specular_color = diffuse_color;
+
+        /* Diffuse */
         diffuse_color = diffuse_color * std::max((double)dot(lightDir, shapeNormal), 0.0) * light.ratio;
-        color_result = color_result + diffuse_color;
+
+        /* Specular */
+        Vec3d l = Vec3d::vectorFromPoints(light.position, intersectionPoint);
+        Vec3d r = reflect(l, shapeNormal).normalized();
+        specular_color = specular_color * pow(std::max(dot(r, viewDir), 0.0), 128);
+
+        /* Append Diffuse and specular to result color */
+        color_result = color_result + diffuse_color + specular_color;
     }
     return clamp(color_result, 0.0, 255.0);
 }
@@ -103,7 +115,6 @@ bool ApplicationLogic::lightAvailable(std::pair<AGeomerty *, double> intersected
 
     std::pair<AGeomerty *, double> closestShape = findNearestIntersect(ray);
     if (closestShape.second < distanceToLight && closestShape.first != intersectedShape.first) {
-        //std::cout << "intersect of " << intersectedShape.first << " interrupted by " << closestShape.first << ": " << distanceToLight << " vs " << closestShape.second << std::endl;
         return false;
     }
     return true;

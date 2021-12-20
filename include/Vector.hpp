@@ -8,7 +8,7 @@
 #include <ostream>
 #include <algorithm>
 
-#define DOOP(op) Vector<T,Dim> operator op(const Vector &other)  { Vector<T,Dim> result; for (int i = 0; i < Dim; ++i) result.m_data[i] = m_data[i] op other.m_data[i]; return result; }
+#define DOOP(op) Vector<T,Dim> operator op(const Vector &other) const { Vector<T,Dim> result; for (int i = 0; i < Dim; ++i) result.m_data[i] = m_data[i] op other.m_data[i]; return result; }
 
 /* Forward declaration */
 template<typename T, int Dim> class Vector;
@@ -68,14 +68,6 @@ public:
             throw std::runtime_error("Index is out of range");
         return m_data[i];
     }
-
-    /*
-    T operator[](int i) const {
-        if (i >= Dim)
-            throw std::runtime_error("Index is out of range");
-        return m_data[i];
-    }
-     */
 
     DOOP(+);
     DOOP(-);

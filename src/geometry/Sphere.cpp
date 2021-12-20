@@ -21,14 +21,16 @@ std::optional<double> Sphere::intersect(const Ray &ray) {
     tc[1] = sqrt(radius * radius - d2);
     double d = tc[0] - tc[1];
     double t1 = tc[0] + tc[1];
-    if (d < 0)
+
+    if (d < 0) /* probably this make render work if we inside the sphere*/
         d = t1;
+
     if (d < 0)
         return std::nullopt;
     return d;
 }
 
-Vec3d Sphere::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view) {
+Vec3d Sphere::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist) {
     Vec3d normal = Vec3d::vectorFromPoints(position, intersectionPoint);
     return normal.normalized();
 }

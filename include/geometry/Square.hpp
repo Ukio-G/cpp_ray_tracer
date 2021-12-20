@@ -12,7 +12,7 @@ public:
     double sizeSide;
     Vertex vertexes[4];
     std::optional<double> intersect(const Ray & ray);
-    Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view);
+    Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist);
 
     void initVertexes();
 };

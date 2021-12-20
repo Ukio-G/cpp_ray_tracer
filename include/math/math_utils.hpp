@@ -1,6 +1,7 @@
 #ifndef MATH_UTILS_HPP
 #define MATH_UTILS_HPP
 
+#include <optional>
 #include "Vector.hpp"
 
 template<class T, int Dim>
@@ -34,7 +35,10 @@ Vector<T, Dim> clamp(Vector<T, Dim> v, T from, T to) {
 
 template <class T, int Dim>
 Vector<T, Dim> reflect(Vector<T, Dim> I, Vector<T, Dim> N) {
-    return I - 2.0 * dot(N, I) * N;
+    auto dot_value = dot(I, N) * 2;
+    N = N * dot_value;
+    I = I - N;
+    return I;
 }
 
 template <class T, int Dim>
@@ -44,5 +48,14 @@ double mixedProduct(Vector<T, Dim> v, Vector<T, Dim> w, Vector<T, Dim> z) {
 
 Vec3d 	getAngles(Vec3d v1);
 
+template<typename T>
+std::optional<std::pair<T, T>> solveSquareEq(Vec3d cf) {
+    T d = cf[1] * cf[1] - 4.0 * cf[0] * cf[2];
+    if (d < 0)
+        return std::nullopt;
+    d = sqrt(d);
+    std::pair<T, T> result{(-cf[1] + d) / (2.0 * cf[0]), (-cf[1] - d) / (2.0 * cf[0])};
+    return result;
+}
 
 #endif

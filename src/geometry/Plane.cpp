@@ -18,7 +18,7 @@ std::optional<double> Plane::intersect(const Ray &ray) {
     return std::nullopt;
 }
 
-Vec3d Plane::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view) {
+Vec3d Plane::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist) {
     if (acos(dot(normal, view)) > (M_PI / 2))
         return normal.inverse();
     return normal;
