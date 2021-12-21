@@ -11,7 +11,7 @@ public:
     void initFromFile(const std::string & filename);
     void renderFrameBuffer();
     const FrameBuffer& getFrameBuffer();
-    Ray computeRayForPixel(unsigned int x, unsigned int y);
+    void computeRayForPixel(unsigned int x, unsigned int y);
     std::pair<AGeomerty *, double> findNearestIntersect(const Ray &ray);
     void swapFrameBufferToSfImage(sf::Image &image);
 

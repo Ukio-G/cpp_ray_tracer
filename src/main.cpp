@@ -65,8 +65,16 @@ int main()
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 running = false;
+
+            if (event.type == sf::Event::MouseButtonReleased) {
+                auto mousepos = sf::Mouse::getPosition(window);
+                application.computeRayForPixel((unsigned int)mousepos.x, (unsigned int)mousepos.y);
+            }
+
         }
         window.clear();
+
+
 
         // Render shapes
         window.draw(sprite);

@@ -119,3 +119,16 @@ bool ApplicationLogic::lightAvailable(std::pair<AGeomerty *, double> intersected
     }
     return true;
 }
+
+void ApplicationLogic::computeRayForPixel(unsigned int x, unsigned int y) {
+    Color rayTraceResult(0.0,0.0,0.0);
+    auto & currentCamera = data.m_sceneComponents.cameras[data.currentCameraIdx];
+
+    Ray ray = currentCamera.computeRayForPixel(x, y, data.frameBuffer);
+
+    std::pair<AGeomerty *, double> closestShape = findNearestIntersect(ray); // Shape and distance to shape
+    if (closestShape.first)
+        rayTraceResult = computeColorFromLight(closestShape, ray);
+    data.frameBuffer.set(x, y, rayTraceResult);
+    std::cout << rayTraceResult << std::endl;
+}
