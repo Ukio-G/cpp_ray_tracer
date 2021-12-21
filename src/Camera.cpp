@@ -35,8 +35,6 @@ Ray Camera::computeRayForPixel(unsigned int x, unsigned int y, FrameBuffer & fra
     rotate_angles[1] = toRadian(rotate_angles[1]);
     rotate_angles[2] = toRadian(rotate_angles[2]);
 
-    //auto rotate_matrix = Matrix3x3::rotateX(rotate_angles[2]);
-    //end = rotate_matrix * end;
     auto rotate_matrix = Matrix3x3::rotateX(rotate_angles[0]);
     end = rotate_matrix * end;
     rotate_matrix = Matrix3x3::rotateY(rotate_angles[1]);

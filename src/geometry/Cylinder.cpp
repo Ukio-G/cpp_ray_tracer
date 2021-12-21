@@ -55,8 +55,6 @@ Cylinder::getNormalInPoint(const Vec3d &intersection, const Vec3d &viewDir, cons
 
     Vec3d orig;
 
-//    if (dot(cyl->normal, vec_from_points(cyl->origin, i->intersection_point)) > 0)
-
     if (dot(direction, Vec3d::vectorFromPoints(position, intersection)) > 0)
         orig = position + (direction * temp);
     else
