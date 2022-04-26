@@ -6,7 +6,7 @@ double toRadian(double degree) {
 }
 
 double toDeg(double rad) {
-    return rad * (180.0 / M_PI);
+    return rad * (180.0 / 3.1415);
 }
 
 Vec3d getAngles(Vec3d v1) {

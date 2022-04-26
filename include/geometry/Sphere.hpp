@@ -10,10 +10,12 @@ public:
     Sphere(Color color_, Vec3d position_, double diameter_);
     Vec3d position;
     double diameter;
+    double radius;
     std::optional<double> intersect(const Ray & ray);
     Vec3d getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist);
 
 private:
+    double m_radius_sq;
     bool m_inverse = false;
     bool m_inversable = true;
 };

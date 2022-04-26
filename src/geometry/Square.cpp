@@ -64,7 +64,7 @@ std::optional<double> Square::intersect(const Ray &ray) {
 
 Vec3d Square::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, const Ray &ray, double dist) {
     auto normal = direction.normalized();
-    if (acos(dot(normal, view)) > (M_PI / 2))
+    if (acos(dot(normal, view)) > (3.1415 / 2))
         normal = normal.inverse();
     return (normal);
 }

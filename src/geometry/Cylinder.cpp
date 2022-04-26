@@ -1,13 +1,16 @@
+#include <math/Matrix.hpp>
+#include <vector>
 #include "math/math_utils.hpp"
 #include "geometry/Cylinder.hpp"
 
 Cylinder::Cylinder() : AGeomerty(), diameter(0), height(0), position({0.0,0.0,0.0}), direction({0.0,0.0,0.0}), radius(0.0) {}
 
 Cylinder::Cylinder(Color color_, double diameter_, double height_, Vector<double, 3> position_, Vector<double, 3> direction_)
-: AGeomerty(color_), diameter(diameter_), height(height_), position(position_), direction(direction_), radius(diameter_ / 2.0) {
+: AGeomerty(color_), diameter(diameter_), height(height_), position(position_), direction(direction_.normalized()), radius(diameter_ / 2.0) {
     auto invNormal = direction.inverse();
     _bottomPoint = position + (invNormal * (height / 2.0));
     _topPoint = _bottomPoint + (direction * height);
+    initBoundBox();
 }
 
 std::optional<double> Cylinder::checkCandidate(Vec3d originRay, Vec3d rayDirection, double dist) {
@@ -18,11 +21,114 @@ std::optional<double> Cylinder::checkCandidate(Vec3d originRay, Vec3d rayDirecti
     return std::nullopt;
 }
 
+std::vector<Sphere> Cylinder::initBoundBox() {
+    std::vector<Sphere> result;
+
+    double x_max;
+    double x_min;
+
+    double y_max;
+    double y_min;
+
+    double z_max;
+    double z_min;
+
+    // Diff angles
+    auto cylinder_angles = getAngles( direction.normalized() );
+    auto main_cylinder_angles = getAngles({0.0, 1.0, 0.0});
+    auto rotate_angles = cylinder_angles - main_cylinder_angles;
+
+    rotate_angles[0] = toRadian(rotate_angles[0]);
+    rotate_angles[1] = toRadian(rotate_angles[1]);
+    rotate_angles[2] = toRadian(rotate_angles[2]);
+
+
+    // Rotation matrix
+    auto rotate_matrix_x = Matrix3x3::rotateX(rotate_angles[0]);
+    auto rotate_matrix_y = Matrix3x3::rotateY(rotate_angles[1]);
+    auto rotate_matrix_z = Matrix3x3::rotateY(rotate_angles[2]);
+
+    x_min = position[0] - radius;
+    x_max = position[0] + radius;
+
+    y_min = position[1] - height / 2;
+    y_max = position[1] + height / 2;
+
+    z_min = position[2] - radius;
+    z_max = position[2] + radius;
+
+    Vec3d Bbox[8];
+
+    Bbox[0] = {x_max, y_max, z_min};
+    Bbox[1] = BBoxMax =  {x_max, y_max, z_max};
+    Bbox[2] = {x_min, y_max, z_max};
+    Bbox[3] = {x_min, y_max, z_min};
+
+    Bbox[4] = {x_max, y_min, z_min};
+    Bbox[5] = {x_max, y_min, z_max};
+    Bbox[6] = {x_min, y_min, z_max};
+    Bbox[7] = BBoxMin = {x_min, y_min, z_min};
+
+    for (int i = 0; i < 8; ++i) {
+        Bbox[i] = (rotate_matrix_x * Bbox[i]);
+        Bbox[i] = (rotate_matrix_y * Bbox[i]);
+        Bbox[i] = (rotate_matrix_z * Bbox[i]);
+        std::cout << "Bbox["<< i << "]: " << Bbox[i] << std::endl;
+
+        Sphere sp(Color{255.0, 255.0, 255.0}, Bbox[i], 0.1);
+        result.push_back(sp);
+    }
+
+    return result;
+}
+
+bool Cylinder::intersectBoundBox(const Ray &ray) {
+    auto comp_wise_min = [](Vec3d & a, Vec3d & b) {
+        Vec3d result;
+        for (int i = 0; i < 3; ++i)
+            result[i] = std::min(a[i], b[i]);
+        return result;
+    };
+
+    auto comp_wise_max = [](Vec3d & a, Vec3d & b) {
+        Vec3d result;
+        for (int i = 0; i < 3; ++i)
+            result[i] = std::max(a[i], b[i]);
+        return result;
+    };
+
+    auto rayDir = ray.Direction();
+
+    Vec3d  tMin = (BBoxMin - ray.Origin());
+    tMin[0] = BBoxMin[0] / rayDir[0];
+    tMin[1] = BBoxMin[1] / rayDir[1];
+    tMin[2] = BBoxMin[2] / rayDir[2];
+
+    Vec3d  tMax = (BBoxMax - ray.Origin());
+    tMax[0] = BBoxMax[0] / rayDir[0];
+    tMax[1] = BBoxMax[1] / rayDir[1];
+    tMax[2] = BBoxMax[2] / rayDir[2];
+
+
+    Vec3d t1 = comp_wise_min(tMin, tMax);
+    Vec3d t2 = comp_wise_max(tMin, tMax);
+
+
+    double tNear = std::max(std::max(t1[0], t1[1]), t1[2]);
+    double tFar = std::min(std::min(t2[0], t2[1]), t2[2]);
+
+    return tNear < tFar;
+}
+
+
 std::optional<double> Cylinder::intersect(const Ray &ray) {
+    /*TODO: Check this */
+    if (!intersectBoundBox(ray))
+        return std::nullopt;
+
     Vec3d coeff;
 
     Vec3d dir = Vec3d::vectorFromPoints(ray.Origin(), ray.Direction()).normalized();
-
 
     auto temp1 = dir - (direction * dot(dir, direction));
     coeff[0] = dot(temp1, temp1);

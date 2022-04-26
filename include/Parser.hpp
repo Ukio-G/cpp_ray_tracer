@@ -17,16 +17,22 @@
 #include "AmbientLight.hpp"
 #include <vector>
 #include "SceneComponents.hpp"
+#include "../continuousGeometryGenerator.h"
 
 class Parser {
 public:
     using ParseItem = std::variant<std::shared_ptr<AGeomerty>, std::optional<Camera>, std::shared_ptr<ALight>, std::optional<Vec2i>>;
 
     std::optional<ParseItem> parseLine(const std::string & line);
-    SceneComponents parseFile(const std::string & filename);
+    SceneComponents parseFile(const std::string& filename);
+    void parseFile(const std::string & filename, ContinuousGeometryGenerator & geometryGenerator);
 
 private:
-    std::shared_ptr<AGeomerty>  parseGeometry(const std::string & line);
+    std::shared_ptr<AGeomerty>  parseGeometry(const std::string& line);
+    void parseGeometry(const std::string& line, ContinuousGeometryGenerator& geometryGenerator);
+    void                        parseGeometry(const std::string & line, void *dst);
+
+
     std::optional<Camera>       parseCamera(const std::string & line);
     std::shared_ptr<ALight>     parseLight(const std::string & line);
     std::optional<Vec2i>        parseWindowSize(const std::string & line);

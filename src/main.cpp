@@ -11,15 +11,29 @@
 #include <Parser.hpp>
 #include <fstream>
 #include <ApplicationLogic.hpp>
+#include <chrono>
+#include "../CudaAppData.cuh"
+#include "geometry/Sphere.hpp"
+#include "../CheckerStructSize.hpp"
+#include "geometry/AGeomerty.hpp"
+#include "../TimeLogger.h"
 
 
-int main()
+int main(int argc, char ** argv)
 {
+    TimeLogger::getInstance()->StartMeasure("Global");
+    checkStructSize();
+
     sf::ContextSettings settings;
 
     ApplicationLogic application;
-    application.initFromFile("../config_rt.txt");
+    std::cout << argc << std::endl;
+    std::string filename = (argc == 1) ? "../config_rt.txt" : argv[1];
+    TimeLogger::getInstance()->StartMeasure("CPUInitData");
+    application.initFromFile(filename);
+    TimeLogger::getInstance()->StopMeasure("CPUInitData");
 
+    application.initFromFileContinuous(filename);
 
     /* Start Configure window context */
     settings.depthBits = 24;
@@ -36,8 +50,22 @@ int main()
     unsigned int width_texture = application.getFrameBuffer().width;
     unsigned int height_texture = application.getFrameBuffer().height;
 
+#ifdef CUDA_RENDER
+    /* CUDA start init */
+    TimeLogger::getInstance()->StartMeasure("CudaInitData");
+    auto initStruct = application.data.generateCudaInitStruct();
+    TimeLogger::getInstance()->StopMeasure("CudaInitData");
+
+    TimeLogger::getInstance()->StartMeasure("CudaInitCopy");
+    cuAppData cudaAppData(&initStruct);
+    TimeLogger::getInstance()->StopMeasure("CudaInitCopy");
+
+    /* CUDA end init */
+
     /* Render scene. Magic start from this point */
-    application.renderFrameBuffer();
+    application.cuData = &cudaAppData;
+#endif
+    application.renderFrameBuffer(CPU);
 
     /* Create texture */
     sf::Texture texture_;
@@ -55,7 +83,9 @@ int main()
     /* Create sprite and init from texture */
     sf::Sprite sprite;
     sprite.setTexture(texture_);
+    TimeLogger::getInstance()->StopMeasure("Global");
 
+    TimeLogger::PrintAllMeasures();
 
     // run the main loop
     bool running = true;

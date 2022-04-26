@@ -77,6 +77,20 @@ std::shared_ptr<AGeomerty> Parser::parseGeometry(const std::string &line) {
     return nullptr;
 }
 
+void Parser::parseGeometry(const std::string& line, ContinuousGeometryGenerator & geometryGenerator)
+{
+    if (strncmp(line.c_str(), "sp", 2) == 0)
+        geometryGenerator.appendSphere(parseSphere(line));
+    if (strncmp(line.c_str(), "pl", 2) == 0)
+        geometryGenerator.appendPlane(parsePlane(line));
+    if (strncmp(line.c_str(), "cy", 2) == 0)
+        geometryGenerator.appendCylinder(parseCylinder(line));
+    if (strncmp(line.c_str(), "sq", 2) == 0)
+        geometryGenerator.appendSquare(parseSquare(line));
+    if (strncmp(line.c_str(), "tr", 2) == 0)
+        geometryGenerator.appendTriangle(parseTriangle(line));
+}
+
 Sphere Parser::parseSphere(const std::string &line) {
     std::string type, position, radius, color;
     std::istringstream iss(line);
@@ -155,7 +169,7 @@ SceneComponents Parser::parseFile(const std::string &filename) {
 
         if (item.has_value()) {
             if (item->index() == 0) {           // AGeometry
-                result.geometry.push_back(std::get<0>(*item));
+                //result.geometry.push_back(std::get<0>(*item));
             } else if (item->index() == 1) {    // Camera
                 result.cameras.push_back(*std::get<1>(*item));
             } else if (item->index() == 2) {    // ALight
@@ -171,4 +185,16 @@ SceneComponents Parser::parseFile(const std::string &filename) {
         memset(buf, 0, 512);
     }
     return result;
+}
+
+void Parser::parseFile(const std::string& filename, ContinuousGeometryGenerator& geometryGenerator)
+{
+    std::fstream file(filename);
+    char buf[512];
+    memset(buf, 0, 512);
+
+    while (file.getline(buf, 512)) {
+        parseGeometry(buf, geometryGenerator);
+        memset(buf, 0, 512);
+    }
 }

@@ -47,7 +47,7 @@ Triangle::getNormalInPoint(const Vec3d &intersectionPoint, const Vec3d &view, co
 
     Vec3d normal = cross(v1, v2).normalized();
     double a = dot(normal, view);
-    if (acos(a) > (M_PI / 2))
+    if (acos(a) > (3.1415 / 2))
         return normal.inverse();
     return normal;
 }

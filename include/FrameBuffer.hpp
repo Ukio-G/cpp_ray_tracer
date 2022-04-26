@@ -21,7 +21,7 @@ public:
 
     unsigned int width;
     unsigned int height;
-private:
+// private:
     Color *buffer;
 };
 

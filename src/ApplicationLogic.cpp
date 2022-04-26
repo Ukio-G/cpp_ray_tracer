@@ -2,6 +2,16 @@
 #include <SFML/Graphics/Image.hpp>
 #include <iostream>
 #include "ApplicationLogic.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <io.h>
+#include <time.h>
+#include <chrono>
+#include <geometry/Sphere.hpp>
+#include "../CudaRendering.cuh"
+#include "../TimeLogger.h"
+
 
 ApplicationLogic::ApplicationLogic() {
 
@@ -12,28 +22,67 @@ void ApplicationLogic::initFromFile(const std::string &filename) {
     auto window_size = data.m_sceneComponents.windowResolution;
     data.frameBuffer = FrameBuffer(window_size[0], window_size[1]);
 
+
+    for(auto & item: data.m_sceneComponents.geometry) {
+        if (auto itemPtr = dynamic_cast<Cylinder*>(item.get())) {
+            auto spheres = itemPtr->initBoundBox();
+
+            for (auto &sphere: spheres) {
+                std::shared_ptr<Sphere> sphere_ptr(new Sphere(sphere));
+                data.m_sceneComponents.geometry.push_back(sphere_ptr);
+            }
+        }
+    }
+
     if (!data.m_sceneComponents.cameras.empty())
         data.currentCameraIdx = 0;
+}
+
+void ApplicationLogic::initFromFileContinuous(const std::string& filename)
+{
+    data.m_geometryCounter.countFromFile(filename);
+    data.m_geometryGenerator.allocateMemory(data.m_geometryCounter);
+    data.parser.parseFile(filename, data.m_geometryGenerator);
 }
 
 const FrameBuffer &ApplicationLogic::getFrameBuffer() {
     return data.frameBuffer;
 }
 
-void ApplicationLogic::renderFrameBuffer() {
+void ApplicationLogic::renderFrameBufferCUDA() {
+    size_t w = data.frameBuffer.width;
+    size_t h = data.frameBuffer.height;
+    
+    TimeLogger::getInstance()->StartMeasure("CudaRender");
+    startCudaRender(cuData, w, h);
+    TimeLogger::getInstance()->StopMeasure("CudaRender");
+
+    copyFramebufferFromGpuToCpu(cuData->m_deviceFrameBuffer, data.frameBuffer.buffer, w * h * sizeof(Color));
+}
+
+
+void ApplicationLogic::renderFrameBufferCPU() {
+    TimeLogger::getInstance()->StartMeasure("CPURender");
     for (int i = 0; i < data.frameBuffer.width; ++i) {
         for (int j = 0; j < data.frameBuffer.height; ++j) {
-            Color rayTraceResult(0.0,0.0,0.0);
-            auto & currentCamera = data.m_sceneComponents.cameras[data.currentCameraIdx];
-
+            Color rayTraceResult(0.0, 0.0, 0.0);
+            auto& currentCamera = data.m_sceneComponents.cameras[data.currentCameraIdx];
             Ray ray = currentCamera.computeRayForPixel(i, j, data.frameBuffer);
-
-            std::pair<AGeomerty *, double> closestShape = findNearestIntersect(ray); // Shape and distance to shape
+            std::pair<AGeomerty*, double> closestShape = findNearestIntersect(ray); // Shape and distance to shape
             if (closestShape.first)
                 rayTraceResult = computeColorFromLight(closestShape, ray);
             data.frameBuffer.set(i, j, rayTraceResult);
+
         }
     }
+    TimeLogger::getInstance()->StopMeasure("CPURender");
+}
+
+void ApplicationLogic::renderFrameBuffer(RenderMode renderMode = CPU) {
+    if (renderMode == CPU)
+        renderFrameBufferCPU();
+    if (renderMode == CUDA)
+        renderFrameBufferCUDA();
 }
 
 // TODO: Add comments
@@ -87,11 +136,59 @@ Color ApplicationLogic::computeColorFromLight(std::pair<AGeomerty *, double> int
 
 std::pair<AGeomerty *, double> ApplicationLogic::findNearestIntersect(const Ray &ray) {
     std::pair<AGeomerty *, double> result = {0, 100000.0};
+    /*
     for (auto &geometry: data.m_sceneComponents.geometry) {
         auto distance = geometry->intersect(ray);
         if (distance.has_value() && *distance < result.second)
             result = {geometry.get(), *distance};
     }
+    */
+
+    auto& counter = data.m_geometryCounter;
+    auto& geometry = data.m_geometryGenerator;
+
+    auto sp_ptr = geometry.getSpheresPtr();
+    auto pl_ptr = geometry.getPlanesPtr();
+    auto cy_ptr = geometry.getCylindersPtr();
+    auto sq_ptr = geometry.getSquaresPtr();
+    auto tr_ptr = geometry.getTrianglesPtr();
+
+    auto _intersect = [&result, &ray](AGeomerty* geometry) {
+        auto distance = geometry->intersect(ray);
+        if (distance.has_value() && *distance < result.second)
+            result = { geometry, *distance };
+    };
+
+    if (sp_ptr)
+        for (size_t i = 0;  i < counter.getSpheresCount(); i++) {
+            _intersect(sp_ptr);
+            sp_ptr++;
+        }
+
+    if (pl_ptr)
+        for (size_t i = 0; i < counter.getPlanesCount(); i++) {
+            _intersect(pl_ptr);
+            pl_ptr++;
+        }
+
+    if (cy_ptr)
+        for (size_t i = 0; i < counter.getCylindersCount(); i++) {
+            _intersect(cy_ptr);
+            cy_ptr++;
+        }
+
+    if (sq_ptr)
+        for (size_t i = 0; i < counter.getSquaresCount(); i++) {
+            _intersect(sq_ptr);
+            sq_ptr++;
+        }
+
+    if (tr_ptr)
+        for (size_t i = 0; i < counter.getTrianglesCount(); i++) {
+            _intersect(tr_ptr);
+            tr_ptr++;
+        }
+
     return result;
 }
 
